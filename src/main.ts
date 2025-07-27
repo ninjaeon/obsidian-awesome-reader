@@ -49,28 +49,6 @@ export default class AwesomeReaderPlugin extends Plugin {
 			),
 		);
 
-		this.registerEvent(
-			this.app.workspace.on(
-				"pane-menu",
-				(menu: Menu, source: string, leaf: WorkspaceLeaf) => {
-					// @ts-ignore
-					if (leaf.view.getViewType() !== 'pdf') {
-						return;
-					}
-					// @ts-ignore
-					const file = leaf.view.file;
-					menu.addItem((item: MenuItem) => {
-							item
-								.setTitle("Open/create book note")
-								.setIcon('document')
-								.onClick(async () => {
-									await openOrCreateNote(this.app, file, await getPdfTocMd(file));
-								});
-						}
-					);
-				}
-			)
-		);
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new AwesomeReaderSettingTab(this.app, this));

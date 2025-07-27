@@ -73,17 +73,26 @@ export class EpubView extends FileView {
 				.setTitle("Open/create book note")
 				.setIcon("document")
 				.onClick(async () => {
+					if (!this.file) {
+						return;
+					}
 					await openOrCreateNote(this.app, this.file, getEpubTocMd(this.fileToc));
 				});
 		});
 	}
 
 	async setInitLocation(initLocation: string | number) {
+		if (!this.file) {
+			return;
+		}
 		this.plugin.settings.bookInitLocations[this.file.path] = initLocation;
 		await this.plugin.saveSettings();
 	}
 
 	async getInitLocation() {
+		if (!this.file) {
+			return null;
+		}
 		const location = this.plugin.settings.bookInitLocations[this.file.path];
 		return location ? location : null;
 	}
