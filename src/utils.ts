@@ -4,16 +4,16 @@ export async function openOrCreateNote(app: App, file: TFile, toc: string) {
 	const noteFilename = `${file.parent ? file.parent.path : ''}/${file.basename}.md`;
 	let noteFile = app.vault.getAbstractFileByPath(noteFilename);
 
-	if (!noteFile) {
+	if (noteFile) {
+		const leaf = app.workspace.getLeaf('split', 'vertical');
+		await leaf.openFile(noteFile as TFile, {active: true});
+	} else {
 		noteFile = await app.vault.create(
 			noteFilename,
 			`---\nbookname: "${file.basename}.${file.extension}"\n---\n\n` + toc
 		);
-	}
-
-	if (noteFile instanceof TFile) {
 		const leaf = app.workspace.getLeaf('split', 'vertical');
-		await leaf.openFile(noteFile, {active: true});
+		await leaf.openFile(noteFile as TFile, {active: true});
 	}
 }
 
