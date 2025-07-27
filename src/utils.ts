@@ -10,11 +10,13 @@ export async function openOrCreateNote(app: App, file: TFile, toc: string) {
 			`---\nbookname: "${file.basename}.${file.extension}"\n---\n\n` + toc
 		);
 	}
+
 	const leaf = app.workspace.getMostRecentLeaf();
-	if (leaf instanceof WorkspaceLeaf) {
-		const fileLeaf = app.workspace.createLeafBySplit(leaf);
-		await fileLeaf.openFile(noteFile as TFile, {active: true});
+	if (!leaf) {
+		return;
 	}
+	const fileLeaf = app.workspace.createLeafBySplit(leaf);
+	await fileLeaf.openFile(noteFile as TFile, {active: true});
 }
 
 export function getEpubTocMd(rawToc: any) {
