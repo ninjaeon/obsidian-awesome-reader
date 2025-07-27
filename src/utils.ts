@@ -11,13 +11,16 @@ export async function openOrCreateNote(app: App, file: TFile, toc: string) {
 		);
 	}
 
-	let leaf = app.workspace.getLeavesOfType("markdown").find(leaf => (leaf.view as any).file?.path === noteFile?.path);
-	if (leaf) {
-		app.workspace.setActiveLeaf(leaf, true, true);
-	} else {
-		const newLeaf = app.workspace.getLeaf('split', 'vertical');
-		await newLeaf.openFile(noteFile as TFile, {active: true});
+	const leaves = app.workspace.getLeavesOfType("markdown");
+	for (const leaf of leaves) {
+		if ((leaf.view as any).file?.name === (noteFile as TFile).name) {
+			app.workspace.setActiveLeaf(leaf, true, true);
+			return;
+		}
 	}
+
+	const newLeaf = app.workspace.getLeaf('split', 'vertical');
+	await newLeaf.openFile(noteFile as TFile, {active: true});
 }
 
 export function getEpubTocMd(rawToc: any) {
