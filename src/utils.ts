@@ -2,17 +2,22 @@ import {App, loadPdfJs, TFile, WorkspaceLeaf} from "obsidian";
 
 export async function openOrCreateNote(app: App, file: TFile, toc: string) {
 	const noteFilename = `${file.parent ? file.parent.path : ''}/${file.basename}.md`;
-	let noteFile = app.vault.getAbstractFileByPath(noteFilename);
-
-	if (!noteFile) {
-		noteFile = await app.vault.create(
+	try {
+		const noteFile = await app.vault.create(
 			noteFilename,
 			`---\nbookname: "${file.basename}.${file.extension}"\n---\n\n` + toc
 		);
+		const leaf = app.workspace.getLeaf(true);
+		await leaf.openFile(noteFile, {active: true});
+	} catch (e) {
+		if (e.message.includes("File already exists")) {
+			const noteFile = app.vault.getAbstractFileByPath(noteFilename);
+			const leaf = app.workspace.getLeaf(true);
+			await leaf.openFile(noteFile as TFile, {active: true});
+		} else {
+			console.error(e);
+		}
 	}
-
-	const leaf = app.workspace.getLeaf(true);
-	await leaf.openFile(noteFile as TFile, {active: true});
 }
 
 export function getEpubTocMd(rawToc: any) {
